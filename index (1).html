@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sai Gopal Jeetham — SAP Fieldglass Consultant</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --blue-100: #dbeafe;
+    --blue-400: #60a5fa;
+    --blue-500: #3b82f6;
+    --blue-600: #2563eb;
+    --blue-700: #1d4ed8;
+    --accent: #3b82f6;
+    --accent-glow: rgba(59,130,246,0.25);
+    --accent-soft: rgba(59,130,246,0.10);
+  }
+  [data-theme="dark"] {
+    --bg: #080c14;
+    --bg-card: #0d1424;
+    --bg-card2: #111827;
+    --border: rgba(59,130,246,0.12);
+    --border-subtle: rgba(255,255,255,0.06);
+    --text-primary: #f0f6ff;
+    --text-secondary: #94a3b8;
+    --text-muted: #4b5563;
+    --nav-bg: rgba(8,12,20,0.88);
+    --tag-bg: rgba(59,130,246,0.12);
+    --tag-text: #93c5fd;
+  }
+  [data-theme="light"] {
+    --bg: #f8faff;
+    --bg-card: #ffffff;
+    --bg-card2: #f1f5fd;
+    --border: rgba(59,130,246,0.18);
+    --border-subtle: rgba(0,0,0,0.07);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --nav-bg: rgba(248,250,255,0.90);
+    --tag-bg: rgba(59,130,246,0.10);
+    --tag-text: #1d4ed8;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    transition: background 0.3s, color 0.3s;
+    overflow-x: hidden;
+  }
+
+  /* ─── NOISE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.4;
+  }
+
+  /* ─── GRADIENT ORBS ─── */
+  .orb {
+    position: fixed; border-radius: 50%;
+    filter: blur(120px); pointer-events: none; z-index: 0;
+    animation: float 12s ease-in-out infinite;
+  }
+  .orb-1 { width: 600px; height: 600px; background: rgba(37,99,235,0.12); top: -200px; right: -100px; animation-delay: 0s; }
+  .orb-2 { width: 400px; height: 400px; background: rgba(96,165,250,0.08); bottom: 10%; left: -100px; animation-delay: -6s; }
+  @keyframes float {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-40px) scale(1.05); }
+  }
+
+  /* ─── NAVBAR ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 0 clamp(1.5rem, 5vw, 4rem);
+    height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: all 0.3s;
+  }
+  nav.scrolled { height: 56px; border-bottom-color: var(--border); }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.1rem;
+    color: var(--text-primary);
+    letter-spacing: -0.02em; text-decoration: none;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
+  .nav-links a {
+    font-size: 0.85rem; font-weight: 500; letter-spacing: 0.02em;
+    color: var(--text-secondary); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-right { display: flex; align-items: center; gap: 1rem; }
+
+  /* theme toggle */
+  .theme-toggle {
+    width: 40px; height: 22px; border-radius: 11px;
+    background: var(--border); border: 1px solid var(--border);
+    cursor: pointer; position: relative; transition: background 0.3s;
+    flex-shrink: 0;
+  }
+  .theme-toggle::after {
+    content: '';
+    position: absolute; top: 2px; left: 2px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--accent);
+    transition: transform 0.3s;
+  }
+  [data-theme="light"] .theme-toggle::after { transform: translateX(18px); }
+
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: var(--text-secondary); border-radius: 2px; transition: all 0.3s; }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh; display: flex; align-items: center;
+    padding: clamp(5rem, 10vw, 8rem) clamp(1.5rem, 8vw, 6rem) 4rem;
+    position: relative; z-index: 1;
+  }
+  .hero-inner {
+    max-width: 900px;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--accent-soft); border: 1px solid var(--border);
+    border-radius: 100px; padding: 0.35rem 1rem;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    letter-spacing: 0.04em; text-transform: uppercase;
+    margin-bottom: 2rem;
+    opacity: 0; transform: translateY(20px);
+    animation: fadeUp 0.6s 0.1s forwards;
+  }
+  .hero-badge::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+  .hero-name {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 800; line-height: 1.0;
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+    opacity: 0; transform: translateY(30px);
+    animation: fadeUp 0.7s 0.2s forwards;
+  }
+  .hero-name .accent-word { color: var(--accent); }
+
+  .hero-title {
+    font-size: clamp(1rem, 2.5vw, 1.35rem);
+    font-weight: 300; color: var(--text-secondary);
+    margin-top: 1rem; letter-spacing: 0.01em;
+    opacity: 0; transform: translateY(20px);
+    animation: fadeUp 0.6s 0.35s forwards;
+  }
+
+  .hero-desc {
+    max-width: 580px; font-size: 1.05rem; line-height: 1.75;
+    color: var(--text-secondary); margin-top: 1.5rem;
+    opacity: 0; transform: translateY(20px);
+    animation: fadeUp 0.6s 0.5s forwards;
+  }
+
+  .hero-ctas {
+    display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2.5rem;
+    opacity: 0; transform: translateY(20px);
+    animation: fadeUp 0.6s 0.65s forwards;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--accent); color: #fff;
+    padding: 0.75rem 1.75rem; border-radius: 8px;
+    font-weight: 500; font-size: 0.9rem; text-decoration: none;
+    transition: all 0.25s; border: none; cursor: pointer;
+    box-shadow: 0 4px 20px var(--accent-glow);
+  }
+  .btn-primary:hover { background: var(--blue-600); transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-glow); }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: transparent; color: var(--text-secondary);
+    padding: 0.75rem 1.75rem; border-radius: 8px;
+    font-weight: 500; font-size: 0.9rem; text-decoration: none;
+    border: 1px solid var(--border-subtle); transition: all 0.25s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+  .hero-stats {
+    display: flex; gap: 3rem; margin-top: 4rem;
+    opacity: 0; transform: translateY(20px);
+    animation: fadeUp 0.6s 0.8s forwards;
+  }
+  .stat-item { }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem; font-weight: 800; color: var(--text-primary);
+    letter-spacing: -0.03em;
+  }
+  .stat-num span { color: var(--accent); }
+  .stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 400; margin-top: 0.1rem; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── SECTION BASE ─── */
+  section {
+    padding: clamp(4rem, 8vw, 7rem) clamp(1.5rem, 8vw, 6rem);
+    position: relative; z-index: 1;
+  }
+  .section-label {
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent);
+    display: flex; align-items: center; gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .section-label::after {
+    content: ''; flex: 1; max-width: 60px; height: 1px;
+    background: var(--accent); opacity: 0.5;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800; letter-spacing: -0.03em;
+    color: var(--text-primary); line-height: 1.1;
+    margin-bottom: 3rem;
+  }
+  .section-title em { color: var(--accent); font-style: normal; }
+
+  /* ─── ABOUT ─── */
+  #about { background: var(--bg); }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem; align-items: center;
+    max-width: 1100px;
+  }
+  .about-text p {
+    font-size: 1.05rem; line-height: 1.8;
+    color: var(--text-secondary); margin-bottom: 1.25rem;
+  }
+  .about-info { display: flex; flex-direction: column; gap: 1.25rem; margin-top: 2rem; }
+  .info-row {
+    display: flex; align-items: center; gap: 1rem;
+    font-size: 0.9rem; color: var(--text-secondary);
+  }
+  .info-icon { color: var(--accent); font-size: 1rem; width: 20px; flex-shrink: 0; }
+  .info-row a { color: var(--text-secondary); text-decoration: none; transition: color 0.2s; }
+  .info-row a:hover { color: var(--accent); }
+
+  .about-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px; padding: 2.5rem;
+    position: relative; overflow: hidden;
+  }
+  .about-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+  .cert-item {
+    display: flex; align-items: flex-start; gap: 0.85rem;
+    padding: 1rem 0; border-bottom: 1px solid var(--border-subtle);
+  }
+  .cert-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .cert-icon { color: var(--accent); font-size: 1.2rem; margin-top: 1px; flex-shrink: 0; }
+  .cert-name { font-weight: 500; font-size: 0.9rem; color: var(--text-primary); }
+  .cert-org { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+  /* ─── SKILLS ─── */
+  #skills { background: var(--bg-card2); }
+  .skills-wrapper { max-width: 1100px; }
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+  .skill-group {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px; padding: 1.75rem;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .skill-group:hover { border-color: var(--border); transform: translateY(-3px); }
+  .skill-group-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1.25rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .tag {
+    background: var(--tag-bg); color: var(--tag-text);
+    padding: 0.35rem 0.85rem; border-radius: 100px;
+    font-size: 0.8rem; font-weight: 500;
+    border: 1px solid rgba(59,130,246,0.15);
+    transition: all 0.2s;
+  }
+  .tag:hover { background: rgba(59,130,246,0.2); transform: scale(1.03); }
+
+  /* ─── EXPERIENCE ─── */
+  #experience { background: var(--bg); }
+  .exp-wrapper { max-width: 900px; }
+  .timeline { position: relative; }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 0; top: 8px; bottom: 0;
+    width: 1px; background: linear-gradient(to bottom, var(--accent), transparent);
+    margin-left: 7px;
+  }
+  .timeline-item {
+    position: relative; padding-left: 2.5rem; margin-bottom: 3rem;
+    opacity: 0; transform: translateX(-20px);
+    transition: opacity 0.6s, transform 0.6s;
+  }
+  .timeline-item.visible { opacity: 1; transform: translateX(0); }
+  .timeline-dot {
+    position: absolute; left: 0; top: 6px;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--bg); border: 2px solid var(--accent);
+    z-index: 1; transition: background 0.3s;
+  }
+  .timeline-item:hover .timeline-dot { background: var(--accent); }
+  .timeline-header { margin-bottom: 1rem; }
+  .job-role {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.15rem; font-weight: 700;
+    color: var(--text-primary); letter-spacing: -0.02em;
+  }
+  .job-meta {
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem;
+    margin-top: 0.35rem; align-items: center;
+  }
+  .job-company { font-size: 0.9rem; font-weight: 500; color: var(--accent); }
+  .job-duration {
+    font-size: 0.8rem; color: var(--text-muted);
+    background: var(--tag-bg); padding: 0.2rem 0.7rem;
+    border-radius: 100px;
+  }
+  .job-location { font-size: 0.8rem; color: var(--text-muted); }
+  .job-achievements {
+    list-style: none; display: flex; flex-direction: column; gap: 0.6rem;
+  }
+  .job-achievements li {
+    font-size: 0.9rem; line-height: 1.6; color: var(--text-secondary);
+    display: flex; gap: 0.75rem;
+  }
+  .job-achievements li::before {
+    content: '→'; color: var(--accent); flex-shrink: 0; font-size: 0.85rem; margin-top: 2px;
+  }
+
+  /* ─── PROJECTS / GITHUB ─── */
+  #projects { background: var(--bg-card2); }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem; max-width: 1100px;
+  }
+  .project-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px; padding: 1.75rem;
+    display: flex; flex-direction: column; gap: 0.75rem;
+    transition: all 0.3s; cursor: pointer;
+    text-decoration: none; color: inherit;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.5s, transform 0.5s, border-color 0.3s, box-shadow 0.3s;
+  }
+  .project-card.visible { opacity: 1; transform: translateY(0); }
+  .project-card:hover {
+    border-color: var(--border); 
+    box-shadow: 0 8px 40px rgba(59,130,246,0.1);
+    transform: translateY(-4px) !important;
+  }
+  .project-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
+  .project-icon { font-size: 1.5rem; }
+  .project-arrow { color: var(--text-muted); font-size: 1rem; transition: color 0.2s, transform 0.2s; }
+  .project-card:hover .project-arrow { color: var(--accent); transform: translate(2px, -2px); }
+  .project-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    color: var(--text-primary); letter-spacing: -0.01em;
+  }
+  .project-desc { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.65; flex: 1; }
+  .project-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .project-tag {
+    font-size: 0.75rem; padding: 0.2rem 0.65rem;
+    background: var(--tag-bg); color: var(--tag-text);
+    border-radius: 100px; font-weight: 500;
+  }
+
+  /* ─── EDUCATION ─── */
+  #education { background: var(--bg); }
+  .edu-card {
+    max-width: 700px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px; padding: 2.5rem;
+    display: flex; gap: 2rem; align-items: flex-start;
+    position: relative; overflow: hidden;
+  }
+  .edu-card::after {
+    content: '';
+    position: absolute; top: 0; left: 0; bottom: 0; width: 3px;
+    background: var(--accent);
+  }
+  .edu-icon {
+    width: 52px; height: 52px; border-radius: 12px;
+    background: var(--accent-soft); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; flex-shrink: 0;
+  }
+  .edu-degree {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem; font-weight: 700;
+    color: var(--text-primary); letter-spacing: -0.02em;
+  }
+  .edu-field { font-size: 0.95rem; color: var(--accent); font-weight: 500; margin-top: 0.2rem; }
+  .edu-college { font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem; line-height: 1.5; }
+  .edu-year {
+    display: inline-block; margin-top: 0.75rem;
+    font-size: 0.78rem; background: var(--tag-bg); color: var(--tag-text);
+    padding: 0.25rem 0.75rem; border-radius: 100px; font-weight: 500;
+  }
+
+  /* ─── CONTACT ─── */
+  #contact { background: var(--bg-card2); }
+  .contact-wrapper {
+    max-width: 700px; text-align: center; margin: 0 auto;
+  }
+  .contact-wrapper .section-label { justify-content: center; }
+  .contact-wrapper .section-label::after { display: none; }
+  .contact-wrapper .section-title { text-align: center; }
+  .contact-sub {
+    font-size: 1.05rem; color: var(--text-secondary);
+    line-height: 1.7; margin-bottom: 3rem;
+  }
+  .contact-links {
+    display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;
+  }
+  .contact-link {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    padding: 0.85rem 1.75rem; border-radius: 10px;
+    font-weight: 500; font-size: 0.9rem; text-decoration: none;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary); background: var(--bg-card);
+    transition: all 0.25s;
+  }
+  .contact-link:hover {
+    border-color: var(--accent); color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px var(--accent-glow);
+  }
+  .contact-link svg { width: 18px; height: 18px; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    text-align: center; padding: 2rem;
+    font-size: 0.8rem; color: var(--text-muted);
+    border-top: 1px solid var(--border-subtle);
+    position: relative; z-index: 1;
+  }
+
+  /* ─── SCROLL ANIMATIONS ─── */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── MOBILE NAV ─── */
+  @media (max-width: 768px) {
+    .nav-links {
+      display: none; flex-direction: column; gap: 0;
+      position: fixed; top: 64px; left: 0; right: 0;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 1rem 0;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a { padding: 0.85rem 1.5rem; font-size: 0.95rem; }
+    .hamburger { display: flex; }
+    .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .hero-stats { gap: 1.5rem; }
+    .edu-card { flex-direction: column; gap: 1rem; }
+    .timeline::before { display: none; }
+    .timeline-item { padding-left: 0; }
+    .timeline-dot { display: none; }
+  }
+
+  @media (max-width: 480px) {
+    .hero-stats { flex-wrap: wrap; }
+    .projects-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <a class="nav-logo" href="#hero">Sai<span>.</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">Available for Opportunities</div>
+    <h1 class="hero-name">Sai Gopal<br><span class="accent-word">Jeetham</span></h1>
+    <p class="hero-title">SAP Fieldglass Consultant &nbsp;·&nbsp; 6+ Years in IT</p>
+    <p class="hero-desc">Dynamic SAP Fieldglass consultant with proven success enhancing client satisfaction through tailored solutions, effective stakeholder engagement, and strategic initiative delivery.</p>
+    <div class="hero-ctas">
+      <a href="#contact" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+        Get In Touch
+      </a>
+      <a href="#experience" class="btn-ghost">
+        View Experience
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">6<span>+</span></div>
+        <div class="stat-label">Years in IT</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">3<span>+</span></div>
+        <div class="stat-label">Years SAP Fieldglass</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">4</div>
+        <div class="stat-label">Companies</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Country Rollouts</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">About Me</div>
+  <h2 class="section-title">The person<br>behind the <em>work</em></h2>
+  <div class="about-grid reveal">
+    <div class="about-text">
+      <p>I'm a dynamic SAP Fieldglass consultant with 6+ years of IT experience, including 3+ years specialising as an EAS SAP Fieldglass Functional Consultant in implementation, requirement analysis, and rollouts.</p>
+      <p>I have deep familiarity with Vendor Management Systems, Managed Service Providers, and Statement of Work modules, and have played a crucial role in implementing rollouts across three countries.</p>
+      <p>I bring strong analytical, problem-solving, and interpersonal skills, and have been recognised as the Agile Methodologies Best Practitioner at LTIMindtree.</p>
+      <div class="about-info">
+        <div class="info-row">
+          <span class="info-icon">📍</span>
+          <span>Hyderabad, India</span>
+        </div>
+        <div class="info-row">
+          <span class="info-icon">✉️</span>
+          <a href="mailto:saigopaljeetham@gmail.com">saigopaljeetham@gmail.com</a>
+        </div>
+        <div class="info-row">
+          <span class="info-icon">📞</span>
+          <a href="tel:+919848045623">+91 9848045623</a>
+        </div>
+        <div class="info-row">
+          <span class="info-icon"></span>
+          <a href="https://github.com/sandysiri537" target="_blank" rel="noopener">github.com/sandysiri537</a>
+        </div>
+      </div>
+    </div>
+    <div class="about-card">
+      <div class="section-label" style="margin-bottom:1.25rem;">Certifications</div>
+      <div class="cert-item">
+        <div class="cert-icon">🏅</div>
+        <div>
+          <div class="cert-name">This is SAP Fieldglass</div>
+          <div class="cert-org">Open SAP Certification</div>
+        </div>
+      </div>
+      <div class="cert-item">
+        <div class="cert-icon">🏅</div>
+        <div>
+          <div class="cert-name">Getting Started with SAP Fieldglass</div>
+          <div class="cert-org">Open SAP Certification</div>
+        </div>
+      </div>
+      <div class="cert-item">
+        <div class="cert-icon">🏆</div>
+        <div>
+          <div class="cert-name">Agile Best Practitioner Award</div>
+          <div class="cert-org">LTIMindtree — Internal Recognition</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="skills-wrapper">
+    <div class="section-label">Core Competencies</div>
+    <h2 class="section-title">Skills &amp; <em>Expertise</em></h2>
+    <div class="skills-grid">
+      <div class="skill-group reveal">
+        <div class="skill-group-title">🔷 SAP Ecosystem</div>
+        <div class="tags">
+          <span class="tag">SAP Fieldglass</span>
+          <span class="tag">SAP Fiori</span>
+          <span class="tag">VMS</span>
+          <span class="tag">SOW Module</span>
+          <span class="tag">SolDoc</span>
+          <span class="tag">SSM</span>
+          <span class="tag">Configuration Manager</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">⚙️ Technical Tools</div>
+        <div class="tags">
+          <span class="tag">JIRA</span>
+          <span class="tag">ServiceNow</span>
+          <span class="tag">Microsoft Azure</span>
+          <span class="tag">HCSM Dashboards</span>
+          <span class="tag">DocuSign</span>
+          <span class="tag">Reporting Tools</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">💻 Programming</div>
+        <div class="tags">
+          <span class="tag">C</span>
+          <span class="tag">Java</span>
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">XML</span>
+          <span class="tag">XSL</span>
+          <span class="tag">PHP</span>
+          <span class="tag">Node.js</span>
+          <span class="tag">MongoDB</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">🗄️ Mainframe</div>
+        <div class="tags">
+          <span class="tag">COBOL</span>
+          <span class="tag">JCL</span>
+          <span class="tag">VSAM</span>
+          <span class="tag">DB2</span>
+          <span class="tag">IMSDB</span>
+          <span class="tag">CICS</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">🤝 Professional Skills</div>
+        <div class="tags">
+          <span class="tag">Stakeholder Engagement</span>
+          <span class="tag">Analytical Thinking</span>
+          <span class="tag">Problem Solving</span>
+          <span class="tag">Negotiation</span>
+          <span class="tag">Active Listening</span>
+          <span class="tag">Agile Methodologies</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">📊 Business Operations</div>
+        <div class="tags">
+          <span class="tag">UAT Testing</span>
+          <span class="tag">Release Management</span>
+          <span class="tag">Workforce Analytics</span>
+          <span class="tag">KBA Documentation</span>
+          <span class="tag">Test Case Writing</span>
+          <span class="tag">LLD Creation</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="exp-wrapper">
+    <div class="section-label">Work History</div>
+    <h2 class="section-title">Professional <em>Experience</em></h2>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-header">
+          <div class="job-role">Fieldglass Consultant</div>
+          <div class="job-meta">
+            <span class="job-company">Adecco</span>
+            <span class="job-location">📍 Hyderabad</span>
+            <span class="job-duration">02/2026 – Present</span>
+          </div>
+        </div>
+        <ul class="job-achievements">
+          <li>Conducted client consultations to identify operational needs, delivering tailored solutions that enhanced client satisfaction.</li>
+          <li>Resolved L2 and L3/L4 tickets, creating KBAs and documenting KBIs to improve knowledge sharing across teams.</li>
+          <li>Monitored operations and reviewed metrics to assess performance, informing strategic adjustments and improvements.</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-header">
+          <div class="job-role">SAP Fieldglass Functional Consultant</div>
+          <div class="job-meta">
+            <span class="job-company">Crescent</span>
+            <span class="job-location">📍 Hyderabad</span>
+            <span class="job-duration">01/2025 – 10/2025</span>
+          </div>
+        </div>
+        <ul class="job-achievements">
+          <li>Configured and supported SAP Fieldglass modules for enhanced operational efficiency, managing contingent workforce and service procurement workflows.</li>
+          <li>Handled end-to-end worker onboarding and offboarding processes, ensuring compliance and smooth transitions.</li>
+          <li>Generated reports, dashboards, and workforce analytics to inform strategic decision-making.</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-header">
+          <div class="job-role">SAP Fieldglass Functional Consultant</div>
+          <div class="job-meta">
+            <span class="job-company">LTIMindtree Pvt. Ltd.</span>
+            <span class="job-duration">09/2022 – 11/2024</span>
+          </div>
+        </div>
+        <ul class="job-achievements">
+          <li>Played a crucial role in implementing rollouts across three countries, contributing to expansion efforts.</li>
+          <li>Served as point of contact for DocuSign, overseeing configuration, endpoint creation, and XSL template implementation.</li>
+          <li>Won the Agile Methodologies Best Practitioner award — recognised for excellence in delivery and collaboration.</li>
+          <li>Conducted UAT during implementation of user enhancements, ensuring alignment with user requirements and system capabilities.</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-header">
+          <div class="job-role">Team Member — Mainframe</div>
+          <div class="job-meta">
+            <span class="job-company">Cognizant</span>
+            <span class="job-location">📍 Portsmouth, USA</span>
+            <span class="job-duration">11/2020 – 08/2022</span>
+          </div>
+        </div>
+        <ul class="job-achievements">
+          <li>Developed and modified COBOL programs for Liberty Mutual Insurance, delivering software solutions supporting diverse insurance products.</li>
+          <li>Restructured copybooks, JCL, and job sysins for improved efficiency; created test JCLs and coordinated build activities.</li>
+          <li>Performed requirement analysis, prepared approach documents, and documented test results for complex module fixes.</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-header">
+          <div class="job-role">Developer</div>
+          <div class="job-meta">
+            <span class="job-company">TCS</span>
+            <span class="job-location">📍 Bangalore, India</span>
+            <span class="job-duration">02/2019 – 10/2020</span>
+          </div>
+        </div>
+        <ul class="job-achievements">
+          <li>Worked for First Data Corporation (FDC) on payment processing and electronic commerce solutions for the EMEA region.</li>
+          <li>Delivered software solutions for merchant transaction processing including credit, debit, and prepaid card offerings.</li>
+          <li>Collaborated with cross-functional teams for Cards domain implementations across Europe, Middle East, and Africa.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">GitHub</div>
+  <h2 class="section-title">Featured <em>Projects</em></h2>
+  <div class="projects-grid">
+
+    <a class="project-card" href="https://github.com/sandysiri537" target="_blank" rel="noopener">
+      <div class="project-card-top">
+        <div class="project-icon">📊</div>
+        <div class="project-arrow">↗</div>
+      </div>
+      <div class="project-name">Fieldglass Reporting Toolkit</div>
+      <div class="project-desc">Custom reporting scripts leveraging SAP Fieldglass data dictionary fields to automate workforce analytics and generate dashboards aligned to stakeholder requirements.</div>
+      <div class="project-tags">
+        <span class="project-tag">SAP Fieldglass</span>
+        <span class="project-tag">XML</span>
+        <span class="project-tag">XSL</span>
+      </div>
+    </a>
+
+    <a class="project-card" href="https://github.com/sandysiri537" target="_blank" rel="noopener">
+      <div class="project-card-top">
+        <div class="project-icon">🔗</div>
+        <div class="project-arrow">↗</div>
+      </div>
+      <div class="project-name">DocuSign Integration Module</div>
+      <div class="project-desc">Configured DocuSign endpoints and XSL templates for seamless integration with SAP Fieldglass, enabling automated document workflows and e-signature processes.</div>
+      <div class="project-tags">
+        <span class="project-tag">DocuSign</span>
+        <span class="project-tag">XSL</span>
+        <span class="project-tag">API Integration</span>
+      </div>
+    </a>
+
+    <a class="project-card" href="https://github.com/sandysiri537" target="_blank" rel="noopener">
+      <div class="project-card-top">
+        <div class="project-icon">🌐</div>
+        <div class="project-arrow">↗</div>
+      </div>
+      <div class="project-name">VMS Integration Testing Suite</div>
+      <div class="project-desc">End-to-end testing framework for VMS systems interfacing with SAP Fieldglass and on-premise systems, including test case creation, regression testing, and identity management integration.</div>
+      <div class="project-tags">
+        <span class="project-tag">Testing</span>
+        <span class="project-tag">VMS</span>
+        <span class="project-tag">Node.js</span>
+      </div>
+    </a>
+
+    <a class="project-card" href="https://github.com/sandysiri537" target="_blank" rel="noopener">
+      <div class="project-card-top">
+        <div class="project-icon">🗃️</div>
+        <div class="project-arrow">↗</div>
+      </div>
+      <div class="project-name">Mainframe COBOL Utilities</div>
+      <div class="project-desc">Collection of COBOL programs, JCL templates, and copybooks developed for large-scale insurance payment processing systems at Liberty Mutual and First Data Corporation.</div>
+      <div class="project-tags">
+        <span class="project-tag">COBOL</span>
+        <span class="project-tag">JCL</span>
+        <span class="project-tag">DB2</span>
+      </div>
+    </a>
+
+    <a class="project-card" href="https://github.com/sandysiri537" target="_blank" rel="noopener">
+      <div class="project-card-top">
+        <div class="project-icon">🚀</div>
+        <div class="project-arrow">↗</div>
+      </div>
+      <div class="project-name">SOW Workflow Automation</div>
+      <div class="project-desc">Automated Statement of Work worker profile management including bill rate change requests, cost centre allocations, and access permission workflows using SAP Fieldglass APIs.</div>
+      <div class="project-tags">
+        <span class="project-tag">SAP Fieldglass</span>
+        <span class="project-tag">Automation</span>
+        <span class="project-tag">MongoDB</span>
+      </div>
+    </a>
+
+    <a class="project-card" href="https://github.com/sandysiri537" target="_blank" rel="noopener">
+      <div class="project-card-top">
+        <div class="project-icon">📋</div>
+        <div class="project-arrow">↗</div>
+      </div>
+      <div class="project-name">KBA Knowledge Base System</div>
+      <div class="project-desc">Structured knowledge base articles (KBAs) and KBI documentation system built to capture L2/L3/L4 resolution patterns and accelerate first-contact resolution rates.</div>
+      <div class="project-tags">
+        <span class="project-tag">ServiceNow</span>
+        <span class="project-tag">Documentation</span>
+        <span class="project-tag">HTML</span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-label">Academic Background</div>
+  <h2 class="section-title">Education &amp; <em>Qualifications</em></h2>
+  <div class="edu-card reveal">
+    <div class="edu-icon">🎓</div>
+    <div>
+      <div class="edu-degree">Bachelor of Technology</div>
+      <div class="edu-field">Computer Science &amp; Engineering</div>
+      <div class="edu-college">Jawaharlal Nehru Institute of Engineering and Technology<br>JNTUK, Vijayawada, India</div>
+      <span class="edu-year">B.Tech — Computer Science</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-wrapper">
+    <div class="section-label">Let's Connect</div>
+    <h2 class="section-title">Get in <em>Touch</em></h2>
+    <p class="contact-sub">I'm open to new opportunities, collaborations, and interesting conversations. Feel free to reach out via any channel below.</p>
+    <div class="contact-links">
+      <a href="mailto:saigopaljeetham@gmail.com" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+        saigopaljeetham@gmail.com
+      </a>
+      <a href="https://github.com/sandysiri537" target="_blank" rel="noopener" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a href="tel:+919848045623" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 1.18 2 2 0 012 .01h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.17 6.17l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        +91 9848045623
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Designed &amp; built with care &nbsp;·&nbsp; © 2026 Sai Gopal Jeetham</p>
+</footer>
+
+<script>
+  // ─── THEME TOGGLE ───
+  const toggle = document.getElementById('themeToggle');
+  const html = document.documentElement;
+  toggle.addEventListener('click', () => {
+    html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+  });
+
+  // ─── STICKY NAV SCROLL ───
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // ─── HAMBURGER ───
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+  });
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => navLinks.classList.remove('open'));
+  });
+
+  // ─── SCROLL REVEAL ───
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, (entry.target.dataset.delay || 0));
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+  document.querySelectorAll('.reveal, .timeline-item, .project-card').forEach((el, i) => {
+    el.dataset.delay = (i % 4) * 100;
+    observer.observe(el);
+  });
+
+  // ─── PROJECT CARD STAGGER ───
+  document.querySelectorAll('.project-card').forEach((card, i) => {
+    card.style.transitionDelay = `${i * 80}ms`;
+  });
+</script>
+</body>
+</html>
